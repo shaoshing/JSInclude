@@ -1,13 +1,10 @@
 JSInclude
 =========
-
-Introduction goes here.
+这是一个简单的JS文件依赖管理插件，对于RIA项目尤为有用。
 
 
 Example
 =======
-
-Example goes here.
 
 
 Copyright (c) 2009 [name of plugin creator], released under the MIT license

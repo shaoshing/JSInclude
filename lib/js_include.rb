@@ -1,11 +1,16 @@
 
 module JSInclude
   
+  BASE_PATH   = "public"
+  INCLUE_TAG  = "@include"
+  
   module Helper
-    def self.js_include file_name
+    def js_include file_name
+      tags = ""
       JSInclude.get_required_file_names(file_name).each do |file|
-        javascript_include_tag file
+        tags += javascript_include_tag(file)+"\n"
       end
+      tags
     end
   end
   
@@ -18,8 +23,6 @@ module JSInclude
     recursion_find_required_files(file_name).reverse 
   end
   
-  BASE_PATH = "public"
-  INCLUE_TAG = "@include"
   def self.scan_include_tag file_name
     result = [] 
     path = file_name.match(/^.*\//)
