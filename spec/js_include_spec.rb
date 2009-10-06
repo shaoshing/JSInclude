@@ -30,8 +30,34 @@ describe "JSInclude" do
   end
   
   describe "[scan_include_tag]" do
-    it "should scan specify file for include tag '@include' and return file names" do
+    before(:each) do
+      JSInclude::BASE_PATH = "test_files"
     end
+    
+    it "only scan lines begin with include tag '//@include" do
+      files = JSInclude.scan_include_tag "tag/normal.js"  
+      files.size.should == 1
+      files[0].should == "tag/test.js"  
+    end
+    
+    it "will stop if the beginning line is not start with tag" do
+      files = JSInclude.scan_include_tag "tag/begin.js"  
+      files.size.should == 0
+    end
+    
+    it "will stop if the up comming line is not start with tag" do
+      files = JSInclude.scan_include_tag "tag/end.js"  
+      files.size.should == 1
+      files[0].should == "tag/test.js"
+    end
+    
+    it "test path padding" do
+      files = JSInclude.scan_include_tag "tag/normal.js"  
+      files[0].should == "tag/test.js"  # pad with path "tag/"
+      files = JSInclude.scan_include_tag "path.js"  
+      files[0].should == "test.js"      # no path padding
+    end
+      
   end
   
   

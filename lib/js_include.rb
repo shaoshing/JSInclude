@@ -13,8 +13,16 @@ module JSInclude
     scan_include_tag file_name
   end
   
+  BASE_PATH = "public"
+  INCLUE_TAG = "@include"
   def self.scan_include_tag file_name
-    
+    result = [] 
+    path = file_name.match /^.*\//
+    File.readlines("#{BASE_PATH}/#{file_name}").each do |line|
+      break unless line.chomp =~ /^\s*\/\/#{INCLUE_TAG}\s*/
+      result << "#{path}#{$'.strip}"
+    end
+    result
   end
   
 end
