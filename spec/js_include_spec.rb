@@ -1,6 +1,6 @@
 
 # Run Test : 
-#   cd    path_to_JSInclude/
+#   cd    path_to_JSInclude
 #   spec  spec/js_include_spec.rb
 
 
@@ -27,6 +27,9 @@ describe "JSInclude" do
       JSInclude.should_receive(:scan_include_tag).with "name"
       JSInclude.get_required_file_names "name"
     end
+    
+    
+    
   end
   
   describe "[scan_include_tag]" do
@@ -34,7 +37,7 @@ describe "JSInclude" do
       JSInclude::BASE_PATH = "test_files"
     end
     
-    it "only scan lines begin with include tag '//@include" do
+    it "only scan lines begin with include tag [JSInclude::INCLUDE_TAG]" do
       files = JSInclude.scan_include_tag "tag/normal.js"  
       files.size.should == 1
       files[0].should == "tag/test.js"  
