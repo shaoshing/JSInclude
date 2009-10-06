@@ -58,7 +58,7 @@ describe "JSInclude" do
       it "when dead lock [a -> b -> a...]" do
         lambda{
           JSInclude::get_required_file_names "/dependency/error/a.js"
-        }.should raise_error(JSInclude::Error::DeadLock)
+        }.should raise_error(JSInclude::Error::DeadEnd)
       end
     end
     
