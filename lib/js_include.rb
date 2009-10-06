@@ -17,12 +17,13 @@ module JSInclude
     
     until pending_files.empty?
       current_file = pending_files.pop
-      raise "出现死循环"  if dependency.include? current_file
+      raise "出现死循环，\n#{dependency.inspect}"  if dependency.include? current_file
       
       dependency.push current_file
       index = result.find_index current_file
       result.delete_at index if index
       result << current_file
+      dependency.pop
       
       pending_files += scan_include_tag(current_file)
     end

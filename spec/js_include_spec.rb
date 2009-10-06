@@ -39,7 +39,12 @@ describe "JSInclude" do
       end      
       
       it "complex" do
-        
+        result = JSInclude::get_required_file_names "dependency/complex/a.js"
+        result.size.should == 6
+        result[0].should == "dependency/complex/../normal/d.js"
+        result[1].should == "dependency/complex/e.js" 
+        result[5].should == "dependency/complex/a.js"
+        puts result.inspect
       end
     end
     
