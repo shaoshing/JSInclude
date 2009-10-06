@@ -43,6 +43,15 @@ describe "JSInclude" do
         result[1].should == "/dependency/complex/e.js" 
         result[5].should == "/dependency/complex/a.js"
       end
+      
+      it "test file order" do
+        result = JSInclude::get_required_file_names "/dependency/order/order.js"
+        result.size.should == 3
+        result[0].should == "/dependency/order/1.js"
+        result[1].should == "/dependency/order/2.js" 
+        result[2].should == "/dependency/order/order.js"
+      end
+      
     end
     
     describe "failure:" do
@@ -77,7 +86,7 @@ describe "JSInclude" do
       files = JSInclude.scan_include_tag "/tag/normal.js"  
       files[0].should == "/tag/test.js"  # pad with path "/tag/"
       files = JSInclude.scan_include_tag "/path.js"  
-      files[0].should == "/test.js"      # no path padding
+      files[1].should == "/test.js"      # no path padding
     end
     
     it "when file not exits" do

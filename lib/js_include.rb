@@ -32,7 +32,7 @@ module JSInclude
       break unless line.chomp =~ /^\s*\/\/#{INCLUE_TAG}\s*/
       result << "#{path}#{$'.strip}"
     end
-    result
+    result.reverse
   end
   
   def self.recursion_find_required_files current_file, dependency = [], result = []
