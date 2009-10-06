@@ -44,13 +44,14 @@ describe "JSInclude" do
         result[0].should == "dependency/complex/../normal/d.js"
         result[1].should == "dependency/complex/e.js" 
         result[5].should == "dependency/complex/a.js"
-        puts result.inspect
       end
     end
     
     describe "failure:" do
-      it "when dead lock [B -> C -> B...]" do
-        
+      it "when dead lock [a -> b -> a...]" do
+        lambda{
+          JSInclude::get_required_file_names "dependency/error/a.js"
+        }.should raise_error(JSInclude::Error::DeadLock)
       end
     end
     
@@ -80,8 +81,13 @@ describe "JSInclude" do
       files = JSInclude.scan_include_tag "path.js"  
       files[0].should == "test.js"      # no path padding
     end
+    
+    it "when file not exits" do
+      lambda{
+        JSInclude::get_required_file_names "dependency/not_a_dir/a.js"
+      }.should raise_error(JSInclude::Error::JsNotFound)
+    end
       
   end
-  
   
 end
