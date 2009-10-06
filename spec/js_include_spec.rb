@@ -22,21 +22,36 @@ describe "JSInclude" do
     end
   end
   
+  before(:each) do
+    JSInclude::BASE_PATH = "test_files"
+  end
+  
   describe "[get_required_file_names]" do
-    it "should call [scan_include_tag]" do
-      JSInclude.should_receive(:scan_include_tag).with "name"
-      JSInclude.get_required_file_names "name"
+    
+    describe "success:" do
+      it "normal dependency" do
+        result = JSInclude::get_required_file_names "dependency/normal/a.js"
+        result.size.should == 4
+        result[0].should == "dependency/normal/d.js"
+        result[1].should == "dependency/normal/c.js"
+        result[2].should == "dependency/normal/b.js"
+        result[3].should == "dependency/normal/a.js"  
+      end      
+      
+      it "complex" do
+        
+      end
     end
     
-    
+    describe "failure:" do
+      it "when dead lock [B -> C -> B...]" do
+        
+      end
+    end
     
   end
   
   describe "[scan_include_tag]" do
-    before(:each) do
-      JSInclude::BASE_PATH = "test_files"
-    end
-    
     it "only scan lines begin with include tag [JSInclude::INCLUDE_TAG]" do
       files = JSInclude.scan_include_tag "tag/normal.js"  
       files.size.should == 1
