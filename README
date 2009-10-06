@@ -1,6 +1,9 @@
 JSInclude
 =========
-这是一个简单的JS文件依赖管理插件，对于RIA项目尤为有用。
+This is a plugin to help maintainning javascript dependency.
+It aims to :
+	1. Easy to use
+	2. Provide better way to view js dependency in RIA project
 
 
 Example
