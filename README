@@ -1,5 +1,5 @@
 JSInclude
-=========================
+=========
 	This plugin helps to ease the difficulty of maintainning javascript dependency.
 	
 	It aims to :
@@ -8,6 +8,12 @@ JSInclude
 		
 	If your project is using RIA and has many js files, this plugins will helps!
 	Please read "TO-DO" before you use it.
+	
+Install
+=======
+	As plugin:
+		cd your_project
+		script/plugin install git://github.com/sxlee87/JSInclude.git
 	
 Example 1 - Simple to use
 =========================
