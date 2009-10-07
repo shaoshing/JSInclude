@@ -28,8 +28,16 @@ module JSInclude
   end
   
   module Error
-    class DeadEnd    < Exception ; end
-    class JsNotFound < Exception ; end 
+    class DeadEnd < Exception 
+      def self.check dependency_stack, file
+        raise new("Dead End at:\n#{dependency_stack.push(file).inspect}") if dependency_stack.include? file
+      end
+    end
+    class JsNotFound < Exception 
+      def self.check file
+        raise new("Js file not found:#{file}") unless File.exists? file
+      end
+    end 
   end
   
   def self.get_required_file_names file_name
@@ -51,8 +59,7 @@ module JSInclude
   #   read js_include_spec.rb for more example
   def self.scan_include_tag file_name
     full_file_name = "#{BASE_PATH}/#{file_name}"
-    raise Error::JsNotFound.new("文件不存在：#{full_file_name}") unless File.exists? full_file_name
-    
+    Error::JsNotFound.check full_file_name
     result = [] 
     path = file_name.match(/^.*\//)
     File.readlines( full_file_name ).each do |line|
@@ -66,17 +73,17 @@ module JSInclude
   #   (C++) #include "name"
   # It will find the rest of files that a file needed and combine the correct files order.
   # ===Explanation
-  #   [dependency] is used to prevent deadend
-  #   When dependency == ["a","b","c"]
+  #   [dependency_stack] is used to prevent deadend
+  #   When dependency_stack == ["a","b","c"]
   #   And the pushing file name is "b"
   #   Then we can sure that it will be deadend like ["a","b","c","b","c"]
-  def self.recursion_find_required_files current_file, dependency = [], result = []
-    check_for_dead_end(dependency, current_file)
+  def self.recursion_find_required_files current_file, dependency_stack = [], result = []
+    Error::DeadEnd.check(dependency_stack, current_file)
     add_required_file(current_file, result)
     
-    dependency.push current_file
-    scan_include_tag(current_file).each{|file| recursion_find_required_files(file, dependency, result) }
-    dependency.pop
+    dependency_stack.push current_file
+    scan_include_tag(current_file).each{|file| recursion_find_required_files(file, dependency_stack, result) }
+    dependency_stack.pop
     result 
   end
   
@@ -88,11 +95,5 @@ module JSInclude
     result.delete_at index if index
     result << file
   end
-  
-  def self.check_for_dead_end dependency, current_file
-    if dependency.include? current_file
-      raise Error::DeadEnd.new("Dead End at:\n#{dependency.push(current_file).inspect}")  
-    end
-  end
-  
+
 end
