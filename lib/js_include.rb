@@ -6,7 +6,7 @@ module JSInclude
   INCLUE_TAG  = "@include"
   
   module Helper
-    # Just like javascript_include_tag, it will generate the <sceipt> tag
+    # Just like javascript_include_tag, it will generate the <script> tag
     # But it will also padding the included files.
     # === Example
     #   content of a.js:
@@ -41,7 +41,6 @@ module JSInclude
   end
   
   def self.get_required_file_names file_name
-    # The result order have to be reverse 
     recursion_find_required_files(file_name).reverse 
   end
   
