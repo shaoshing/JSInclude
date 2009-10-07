@@ -1,13 +1,76 @@
 JSInclude
-=========
-This is a plugin to help maintainning javascript dependency.
-It aims to :
-	1. Easy to use
-	2. Provide better way to view js dependency in RIA project
+=========================
+	This plugin helps to ease the difficulty of maintainning javascript dependency.
+	
+	It aims to :
+		1. Better way to deal with many js files in RIA project.
+		2. As simple as possible to use it.
+		
+	If your project is using RIA and has many js files, this plugins will helps!
+	Please read "TO-DO" before you use it.
+	
+Example 1 - Simple to use
+=========================
+	You hava a javascript file named: c.js.
+	To use it, it required another two file named: a.js, b.js.
+	The most way you do is use "javascript_include_tag" in erb file :
+		<%= javascript_include_tag 'a.js'%>
+		<%= javascript_include_tag 'b.js'%>
+		<%= javascript_include_tag 'c.js'%>
+	
+	With JSInclude, you can do the same thing like this:
+		1. Add the following comment in c.js:
+		//@include a.js
+		//@include b.js
+		
+		2. Add JSInclue helper in application_controller.rb:
+		helper JSInclude::Helper
+		
+		3. Replace the javascript_include_tags with :
+		<%= js_include 'c.js' %>
+		
+Example 2 - For RIA
+===================
+	RIA project brings more and more js files, and their relationship may be complex.
+	For example:
+		( A -> B : mesans A require B  )
+		B -> A
+		C -> A
+		D -> C,B 
+		
+	It sucks if maintain in usual way( as example 1 shows ):
+		1. You have to maintain the dependency in your own!( by writing the javascript_include_tags )
+		2. May have Duplication!( if D is frequent used )
+		3. It was difficult to figure out the dependency!( You don't know C require A by only watching the C file. )
+		
+	Problems can be solve by organizing the files in this way with JSInclude:
+		B.js:
+		//@include A.js
+		C.js:
+		//@include A.js
+		D.js:
+		//@include B.js
+		//@include C.js
+	Now:
+		1. You don't have to maintain the dependency, JSInclude will do it.
+		2. No duplication, just include one file you use.( User js_include "D.js" )
+		3. In any file, you know what it require.( Through the "@include" tag )
+		
+How it works
+============
+	By using helper "js_include", the plugin will scan the file for "@include" tag, and extract the file it need.
+	It will dig into each file until the end, and find out all files with correct order.
+	Finally, it will generate <script> tag with these files.
 
-
-Example
+TO-DO
+=====
+	This plugin was still simple and not yet test in production, so it:
+	1. will scan each js file in every "js_include", may lead to low performence.
+	2. didn't provide a way to compress js files instead of include them.
+	
+Contact
 =======
-
+	Blog: www.sxlee.com 
+	Mail: sxlee87@gmail.com
 
 Copyright (c) 2009 [JSInclude], released under the MIT license
