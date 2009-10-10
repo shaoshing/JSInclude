@@ -2,11 +2,11 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>currentDocument</key>
-	<string>lib/js_include.rb</string>
 	<key>documents</key>
 	<array>
 		<dict>
+			<key>expanded</key>
+			<true/>
 			<key>name</key>
 			<string>js_include</string>
 			<key>regexFolderFilter</key>
@@ -14,17 +14,104 @@
 			<key>sourceDirectory</key>
 			<string></string>
 		</dict>
+		<dict>
+			<key>children</key>
+			<array>
+				<dict>
+					<key>name</key>
+					<string>lib</string>
+					<key>regexFolderFilter</key>
+					<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
+					<key>sourceDirectory</key>
+					<string>lib</string>
+				</dict>
+				<dict>
+					<key>name</key>
+					<string>spec</string>
+					<key>regexFolderFilter</key>
+					<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
+					<key>sourceDirectory</key>
+					<string>spec</string>
+				</dict>
+				<dict>
+					<key>name</key>
+					<string>test_files</string>
+					<key>regexFolderFilter</key>
+					<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
+					<key>sourceDirectory</key>
+					<string>test_files</string>
+				</dict>
+			</array>
+			<key>name</key>
+			<string>Frequent</string>
+		</dict>
 	</array>
 	<key>fileHierarchyDrawerWidth</key>
 	<integer>200</integer>
 	<key>metaData</key>
 	<dict>
-		<key>README</key>
+		<key>lib/js_include.rb</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
+				<integer>5</integer>
+				<key>line</key>
+				<integer>44</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>45</integer>
+		</dict>
+		<key>spec/js_include_spec.rb</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>27</integer>
+				<key>line</key>
+				<integer>32</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>25</integer>
+		</dict>
+		<key>test_files/dependency/complex/b.js</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>12</integer>
+				<key>line</key>
 				<integer>0</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
+		<key>test_files/dependency/complex/e.js</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>12</integer>
+				<key>line</key>
+				<integer>0</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
+		<key>test_files/dependency/order/order.js</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>15</integer>
 				<key>line</key>
 				<integer>1</integer>
 			</dict>
@@ -33,14 +120,28 @@
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
 		</dict>
-		<key>lib/js_include.rb</key>
+		<key>test_files/tag/end.js</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>0</integer>
+				<integer>18</integer>
 				<key>line</key>
-				<integer>1</integer>
+				<integer>0</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
+		<key>test_files/tag/normal.js</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>10</integer>
+				<key>line</key>
+				<integer>0</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -48,11 +149,6 @@
 			<integer>0</integer>
 		</dict>
 	</dict>
-	<key>openDocuments</key>
-	<array>
-		<string>README</string>
-		<string>lib/js_include.rb</string>
-	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>

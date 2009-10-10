@@ -90,7 +90,7 @@ module JSInclude
     # When result == ["a","b","c"]
     # And the file == "b"
     # Then the previous "b" have to be removed before add file
-    index = result.find_index file
+    index = result.index file
     result.delete_at index if index
     result << file
   end
