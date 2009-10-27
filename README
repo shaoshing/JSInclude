@@ -2,23 +2,21 @@ JSInclude
 =========
 	This plugin helps to ease the difficulty of maintainning javascript dependency.
 	
-	It aims to :
-		1. Better way to deal with many js files in RIA project.
-		2. As simple as possible to use it.
+	Features
+		1. Simple to use.
+		2. Provide easy way to deal with mass js files.
+		3. Include production support
+			( automatically merge and compress js files into single file, see example 3 )
 		
 	If your project is using RIA and has many js files, this plugins will helps!
 	Please read "TO-DO" before you use it.
-
+	
 	
 Install
 =======
 	As plugin:
 		cd your_project
 		script/plugin install git://github.com/sxlee87/JSInclude.git
-		
-Basic Info
-==========
-	YUI-Compressor version : 2.4.2
 	
 Example 1 - Simple to use
 =========================
@@ -67,17 +65,45 @@ Example 2 - For RIA
 		2. No duplication, just include one file you use.( User js_include "D.js" )
 		3. In any file, you know what it require.( Through the "@include" tag )
 		
+Example 3 - Production support
+==============================
+	Add config into your environment.rb:
+		JSInclude.enable_production = true  if RAILS_ENV == "production"
+	This will turn JSInclude into production, it will:
+		1. Merge all required files into single js file
+		2. Compress the single file with YUI-Compressor(version : 2.4.2)
+	
+	Example :
+		Given
+			a.js:
+			true ? true : false ;
+			b.js:
+			//@include a.js
+			alert("hello");
+		When 
+			<%= js_include "b.js" %>
+		Then it will be 
+			<%= javascript_include_tag 'b_compressed.js'%>
+			b_compressed.js :
+				true?true:false;alert("hello")
+	
+	Others:
+		1. The default folder to store compressed files is : public/js_include_cached.
+		   Modity JSInclude.base_path and JSInclude.cache_dir_name to change it
+		2. When first boot production server, it will take times to redo merger becauser of the cache data was lost.
+		
+		
 How it works
 ============
+	Finding denpendency:
 	By using helper "js_include", the plugin will scan the file for "@include" tag, and extract the file it need.
 	It will dig into each file until the end, and find out all files with correct order.
 	Finally, it will generate <script> tag with these files.
 
 TO-DO
 =====
-	This plugin was still simple and not yet test in production, so it:
-	1. will scan each js file in every "js_include", may lead to low performence.
-	2. didn't provide a way to compress js files instead of include them.
+	More test in production.
+	
 	
 Contact
 =======
