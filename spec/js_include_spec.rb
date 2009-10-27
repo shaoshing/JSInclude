@@ -6,6 +6,8 @@
 
 require "lib/js_include"
 
+RAILS_ROOT = "./test_files"
+
 describe "JSInclude" do
   
   before(:each) do
@@ -124,6 +126,29 @@ describe "JSInclude" do
       lambda{
         JSInclude::get_required_file_names "/dependency/not_a_dir/a.js"
       }.should raise_error(JSInclude::Error::JsNotFound)
+    end
+  end
+  
+  describe "[merge_and_compress_files]" do
+    it "involve [merge] and [compress]" do
+      JSInclude.should_receive(:merge).with(["some thing"]).and_return "merged"
+      JSInclude.should_receive(:compress).with("merged").and_return "compressed"
+      
+      JSInclude.merge_and_compress_files(["some thing"]).should == "compressed" 
+    end
+    before(:each) do
+      `mkdir test_files/tmp`      
+    end
+    after(:each) do
+      `rm -Rf test_files/tmp`
+    end
+    describe "merging" do
+      it "should merge files into one file" do
+        file = JSInclude.merge ["#{JSInclude::BASE_PATH}/merging/a.js","#{JSInclude::BASE_PATH}/merging/b.js"]
+        File.read(file).should ==  "a\nb"
+      end
+    end
+    describe "compressing" do
     end
   end
   

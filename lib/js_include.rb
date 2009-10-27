@@ -54,8 +54,24 @@ module JSInclude
         return cached_file_name
       end
     else
-      return recursion_find_required_files(file_name).reverse 
+      return recursion_find_required_files file_name 
     end
+  end
+  
+  def self.merge_and_compress_files files
+    return compress(merge files)
+  end
+  
+  def self.merge files
+    content = files.collect{ |file| File.read file }.join "\n"
+    # write to tmp file
+    file_name = files.last.match(/[\w|\s]*\.js/).to_s.gsub(".js","")+"_compressed.js"
+    full_file_name = File.join(RAILS_ROOT, '/tmp/', file_name)
+    File.open(full_file_name, 'w'){ |file| file << content }
+    full_file_name
+  end
+  
+  def self.compress file
   end
   
   # Scan for INCLUDE_TAG and extract file_name after the TAG.
@@ -97,7 +113,9 @@ module JSInclude
     dependency_stack.push current_file
     scan_include_tag(current_file).each{|file| recursion_find_required_files(file, dependency_stack, result) }
     dependency_stack.pop
-    result 
+    
+    # the final result may be [b.js,a.js], so it has to be reverse to the right order
+    if dependency_stack.empty? then result.reverse else result end
   end
   
   def self.add_required_file file, result
