@@ -8,12 +8,17 @@ JSInclude
 		
 	If your project is using RIA and has many js files, this plugins will helps!
 	Please read "TO-DO" before you use it.
+
 	
 Install
 =======
 	As plugin:
 		cd your_project
 		script/plugin install git://github.com/sxlee87/JSInclude.git
+		
+Basic Info
+==========
+	YUI-Compressor version : 2.4.2
 	
 Example 1 - Simple to use
 =========================
