@@ -11,8 +11,8 @@ RAILS_ROOT = "./test_files"
 describe "JSInclude" do
   
   before(:each) do
-    JSInclude::ENABLE_PRODUCTION = false
-    JSInclude::BASE_PATH = "test_files"
+    JSInclude.enable_production = false
+    JSInclude.base_path = "test_files"
   end
   
   describe "view helper [js_include] " do
@@ -66,20 +66,21 @@ describe "JSInclude" do
     
     describe "when enable production and required file was" do
       before(:each) do
-        JSInclude::ENABLE_PRODUCTION = true
-        JSInclude::CACHE = {}
-        JSInclude::CACHE_BASE_PATH   = "test_files/cache"
+        JSInclude.enable_production = true
+        JSInclude.cache = {}
+        JSInclude.cache_dir_name    = "cache"
         @file_name = "a.js"
-        @full_file_name = "#{JSInclude::BASE_PATH}/a.js"
+        @full_file_name = "#{JSInclude.base_path}/a.js"
       end
       describe "cached " do
         it "should return cached file name when the file was exist" do
-          JSInclude::CACHE.should_receive(:[]).with(@full_file_name).and_return("#{JSInclude::CACHE_BASE_PATH}/compressed.js")
-          JSInclude::get_required_file_names(@file_name).should ==  "#{JSInclude::CACHE_BASE_PATH}/compressed.js"
+          cached_name = "#{JSInclude.base_path}/#{JSInclude.cache_dir_name}/compressed.js"
+          JSInclude.cache.should_receive(:[]).with(@full_file_name).and_return(cached_name)
+          JSInclude::get_required_file_names(@file_name).should ==  cached_name
         end
         it "should involve [merge_and_compress_file] if file not exist" do
-          JSInclude.stub! :recursion_find_required_files
-          JSInclude::CACHE.should_receive(:[]).with(@full_file_name).and_return nil
+          JSInclude.stub!(:recursion_find_required_files).and_return []
+          JSInclude.cache.should_receive(:[]).with(@full_file_name).and_return nil
           JSInclude.should_receive(:merge_and_compress_files)
           JSInclude::get_required_file_names(@file_name)
         end
@@ -87,10 +88,10 @@ describe "JSInclude" do
       describe "not cached" do
         it "should merge_and_compress_files, and then store cached file name and return that name" do
           JSInclude.should_receive(:recursion_find_required_files).with(@file_name).and_return(["a.js"])
-          JSInclude.should_receive(:merge_and_compress_files).with(["a.js"]).and_return("cached_name.js")
+          JSInclude.should_receive(:merge_and_compress_files).with(["#{JSInclude.base_path}/a.js"]).and_return("cached_name.js")
           
           JSInclude::get_required_file_names(@file_name).should == "cached_name.js" 
-          JSInclude::CACHE[@full_file_name].should == "cached_name.js" 
+          JSInclude.cache[@full_file_name].should == "cached_name.js" 
         end
       end
     end
@@ -135,29 +136,26 @@ describe "JSInclude" do
       JSInclude.should_receive(:compress)
       JSInclude.merge_and_compress_files(nil)
     end
-    before(:each) do
-      `mkdir test_files/tmp`      
-    end
-    after(:each) do
-      `rm -Rf test_files/tmp`
-    end
     describe "merging" do
+      before(:each) do
+        `mkdir test_files/tmp`      
+      end
+      after(:each) do
+        `rm -Rf test_files/tmp`
+      end
       it "should merge files into one file" do
-        file, full_file_name = JSInclude.merge ["#{JSInclude::BASE_PATH}/merging/a.js","#{JSInclude::BASE_PATH}/merging/b.js"]
+        file, full_file_name = JSInclude.merge ["#{JSInclude.base_path}/merging/a.js","#{JSInclude.base_path}/merging/b.js"]
         File.read(full_file_name).should ==  "a\nb"
       end
     end
+    
     describe "compressing" do
       it "should compress the file with YUI-Compressor"do
         RAILS_ROOT = "./../../.."
-        file = JSInclude.compress "to_be_compressed.js", "#{JSInclude::BASE_PATH}/to_be_compressed.js"
-        # file.should == "#{JSInclude::CACHE_BASE_PATH}/to_be_compressed_compressed.js" 
-        File.read(file).should ==  "true?1:2;" 
-        `rm #{file}`
+        file = JSInclude.compress "to_be_compress.js", "#{JSInclude.base_path}/to_be_compress.js"
+        file.should == "#{JSInclude.cache_dir_name}/to_be_compress.js"
+        File.read("#{JSInclude.base_path}/#{file}").should ==  "true?1:2;" 
       end
     end
   end
-  
-  
-  
 end

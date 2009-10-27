@@ -1,11 +1,19 @@
 
-module JSInclude
+class JSInclude
   
-  BASE_PATH           = "public"
-  INCLUE_TAG          = "@include"  # You can change the TAG into anything as you like
-  ENABLE_PRODUCTION   = false 
-  CACHE               = {}          #  required_file => merged_and_compressed_file
-  CACHE_BASE_PATH     = "public/js_include_cached"
+  class << self
+    attr_accessor :base_path
+    attr_accessor :inclue_tag       
+    attr_accessor :enable_production
+    attr_accessor :cache            
+    attr_accessor :cache_dir_name
+  end
+  self.base_path         = "public"
+  self.inclue_tag        = "@include"           # You can change the TAG into anything as you like
+  self.enable_production = false 
+  self.cache             = {}                   #  required_file => merged_and_compressed_file
+  self.cache_dir_name    = "js_include_cached"
+  
   
   module Helper
     # Just like javascript_include_tag, it will generate the <script> tag
@@ -43,14 +51,15 @@ module JSInclude
   end
   
   def self.get_required_file_names file_name
-    full_file_name = "#{BASE_PATH}/#{file_name}"
-    if JSInclude::ENABLE_PRODUCTION
-      cached_file_name = JSInclude::CACHE[full_file_name]
+    full_file_name = "#{base_path}/#{file_name}"
+    if enable_production
+      cached_file_name = cache[full_file_name]
       if cached_file_name and File.exists? cached_file_name
         return cached_file_name
       else
-        cached_file_name = merge_and_compress_files(recursion_find_required_files file_name)
-        JSInclude::CACHE[full_file_name] = cached_file_name
+        files = recursion_find_required_files file_name
+        cached_file_name = merge_and_compress_files files.collect{|file|"#{base_path}/#{file}"}
+        cache[full_file_name] = cached_file_name
         return cached_file_name
       end
     else
@@ -78,9 +87,9 @@ module JSInclude
   
   def self.compress file_name, full_file_name
     yui_compressor = "#{RAILS_ROOT}/vendor/plugins/js_include/lib/yui-compressor.jar"
-    `java -jar #{yui_compressor} --charset UTF-8 -o #{JSInclude::CACHE_BASE_PATH}/#{file_name} #{full_file_name}`
+    `java -jar #{yui_compressor} --charset UTF-8 -o #{base_path}/#{cache_dir_name}/#{file_name} #{full_file_name}`
     # $?.exitstatus  0 for success , others for failure
-    "#{JSInclude::CACHE_BASE_PATH}/#{file_name}"
+    "#{cache_dir_name}/#{file_name}"
   end
   
   # Scan for INCLUDE_TAG and extract file_name after the TAG.
@@ -96,12 +105,12 @@ module JSInclude
   #   scan_include_tag "a.js" => ["c.js","b.js"] 
   #   read js_include_spec.rb for more example
   def self.scan_include_tag file_name
-    full_file_name = "#{BASE_PATH}/#{file_name}"
+    full_file_name = "#{base_path}/#{file_name}"
     Error::JsNotFound.check full_file_name
     result = [] 
     path = file_name.match(/^.*\//)
     File.readlines( full_file_name ).each do |line|
-      break unless line.chomp =~ /^\s*\/\/#{INCLUE_TAG}\s*/
+      break unless line.chomp =~ /^\s*\/\/#{inclue_tag}\s*/
       result << "#{path}#{$'.strip}"
     end
     result.reverse  # Reverse to work with [recursion_find_required_files]
