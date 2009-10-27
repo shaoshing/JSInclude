@@ -1,9 +1,11 @@
 
 module JSInclude
   
-  BASE_PATH   = "public"
-  # You can change the TAG into anything as you like
-  INCLUE_TAG  = "@include"
+  BASE_PATH           = "public"
+  INCLUE_TAG          = "@include"  # You can change the TAG into anything as you like
+  ENABLE_PRODUCTION   = false 
+  CACHE               = {}          #  required_file => merged_and_compressed_file
+  CACHE_BASE_PATH     = "public/js_include_cached"
   
   module Helper
     # Just like javascript_include_tag, it will generate the <script> tag
@@ -35,13 +37,22 @@ module JSInclude
     end
     class JsNotFound < Exception 
       def self.check file
-        raise new("Js file not found:#{file}") unless File.exists? file
+        raise new("Javascript file not found in #{file}") unless File.exists? file
       end
     end 
   end
   
   def self.get_required_file_names file_name
-    recursion_find_required_files(file_name).reverse 
+    if JSInclude::ENABLE_PRODUCTION
+      cached_file_name = JSInclude::CACHE[file_name]
+      if cached_file_name and File.exists? cached_file_name
+        return cached_file_name
+      else
+        merge_and_compress_file file_name
+      end
+    else
+      return recursion_find_required_files(file_name).reverse 
+    end
   end
   
   # Scan for INCLUDE_TAG and extract file_name after the TAG.

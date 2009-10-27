@@ -8,9 +8,13 @@ require "lib/js_include"
 
 describe "JSInclude" do
   
+  before(:each) do
+    JSInclude::ENABLE_PRODUCTION = false
+    JSInclude::BASE_PATH = "test_files"
+  end
+  
   describe "view helper [js_include] " do
     it "should call [javascript_include_tag] for each required files " do
-      
       class A ; include JSInclude::Helper ; end
       a = A.new
       JSInclude.should_receive(:get_required_file_names).with("empty").and_return ["a.js","b.js"]
@@ -19,10 +23,7 @@ describe "JSInclude" do
       a.js_include "empty"
     end
   end
-  
-  before(:each) do
-    JSInclude::BASE_PATH = "test_files"
-  end
+
   
   describe "[get_required_file_names]" do
     
@@ -51,7 +52,6 @@ describe "JSInclude" do
         result[1].should == "/dependency/order/2.js" 
         result[2].should == "/dependency/order/order.js"
       end
-      
     end
     
     describe "failure:" do
@@ -59,6 +59,25 @@ describe "JSInclude" do
         lambda{
           JSInclude::get_required_file_names "/dependency/error/a.js"
         }.should raise_error(JSInclude::Error::DeadEnd)
+      end
+    end
+    
+    describe "when enable production" do
+      before(:each) do
+        JSInclude::ENABLE_PRODUCTION = true
+        JSInclude::CACHE = {}
+        JSInclude::CACHE_BASE_PATH   = "test_files/cache"
+      end
+      describe "and included file was cached " do
+        it "should return cached file name when the file was exist" do
+          JSInclude::CACHE.should_receive(:[]).with("a.js").and_return("#{JSInclude::CACHE_BASE_PATH}/compressed.js")
+          JSInclude::get_required_file_names("a.js").should ==  "#{JSInclude::CACHE_BASE_PATH}/compressed.js"
+        end
+        it "should involve [merge_and_compress_file] if file not exist" do
+          JSInclude.should_receive(:merge_and_compress_file).with("a.js")
+          JSInclude::CACHE.should_receive(:[]).with("a.js").and_return nil
+          JSInclude::get_required_file_names("a.js")
+        end
       end
     end
     
@@ -94,7 +113,8 @@ describe "JSInclude" do
         JSInclude::get_required_file_names "/dependency/not_a_dir/a.js"
       }.should raise_error(JSInclude::Error::JsNotFound)
     end
-      
   end
+  
+  
   
 end
