@@ -59,19 +59,28 @@ module JSInclude
   end
   
   def self.merge_and_compress_files files
-    return compress(merge files)
+    file, filename = merge files
+    return compress file, filename
   end
   
   def self.merge files
     content = files.collect{ |file| File.read file }.join "\n"
     # write to tmp file
-    file_name = files.last.match(/[\w|\s]*\.js/).to_s.gsub(".js","")+"_compressed.js"
+    file_name = JSInclude.extract_js_file_name(files.last)+"_compressed.js"
     full_file_name = File.join(RAILS_ROOT, '/tmp/', file_name)
     File.open(full_file_name, 'w'){ |file| file << content }
-    full_file_name
+    return file_name, full_file_name
   end
   
-  def self.compress file
+  def self.extract_js_file_name str
+    str.match(/[\w|\s]*\.js/).to_s.gsub(".js","")
+  end
+  
+  def self.compress file_name, full_file_name
+    yui_compressor = "#{RAILS_ROOT}/vendor/plugins/js_include/lib/yui-compressor.jar"
+    `java -jar #{yui_compressor} --charset UTF-8 -o #{JSInclude::CACHE_BASE_PATH}/#{file_name} #{full_file_name}`
+    # $?.exitstatus  0 for success , others for failure
+    "#{JSInclude::CACHE_BASE_PATH}/#{file_name}"
   end
   
   # Scan for INCLUDE_TAG and extract file_name after the TAG.

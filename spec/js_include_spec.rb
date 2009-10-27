@@ -131,10 +131,9 @@ describe "JSInclude" do
   
   describe "[merge_and_compress_files]" do
     it "involve [merge] and [compress]" do
-      JSInclude.should_receive(:merge).with(["some thing"]).and_return "merged"
-      JSInclude.should_receive(:compress).with("merged").and_return "compressed"
-      
-      JSInclude.merge_and_compress_files(["some thing"]).should == "compressed" 
+      JSInclude.should_receive(:merge)
+      JSInclude.should_receive(:compress)
+      JSInclude.merge_and_compress_files(nil)
     end
     before(:each) do
       `mkdir test_files/tmp`      
@@ -144,11 +143,18 @@ describe "JSInclude" do
     end
     describe "merging" do
       it "should merge files into one file" do
-        file = JSInclude.merge ["#{JSInclude::BASE_PATH}/merging/a.js","#{JSInclude::BASE_PATH}/merging/b.js"]
-        File.read(file).should ==  "a\nb"
+        file, full_file_name = JSInclude.merge ["#{JSInclude::BASE_PATH}/merging/a.js","#{JSInclude::BASE_PATH}/merging/b.js"]
+        File.read(full_file_name).should ==  "a\nb"
       end
     end
     describe "compressing" do
+      it "should compress the file with YUI-Compressor"do
+        RAILS_ROOT = "./../../.."
+        file = JSInclude.compress "to_be_compressed.js", "#{JSInclude::BASE_PATH}/to_be_compressed.js"
+        # file.should == "#{JSInclude::CACHE_BASE_PATH}/to_be_compressed_compressed.js" 
+        File.read(file).should ==  "true?1:2;" 
+        `rm #{file}`
+      end
     end
   end
   
