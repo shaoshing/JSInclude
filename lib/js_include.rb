@@ -29,11 +29,8 @@ class JSInclude
     #     <script src="/c.js?1253971149" type="text/javascript"></script>
     #     <script src="/a.js?1254127786" type="text/javascript"></script>
     def js_include file_name
-      tags = ""
-      JSInclude.get_required_file_names(file_name).each do |file|
-        tags += javascript_include_tag(file)+"\n"
-      end
-      tags
+      files = JSInclude.get_required_file_names(file_name)
+      files.collect{|f| javascript_include_tag(f)}.join "\n"
     end
   end
   
@@ -51,14 +48,14 @@ class JSInclude
   end
   
   def self.get_required_file_names file_name
-    full_file_name = "#{base_path}/#{file_name}"
+    full_file_name = File.join(base_path,file_name)
     if enable_production
       cached_file_name = cache[full_file_name]
-      if cached_file_name and File.exists? "#{base_path}#{cached_file_name}"
+      if cached_file_name and File.exists? File.join(base_path,cached_file_name)
         return cached_file_name
       else
         files = recursion_find_required_files file_name
-        cached_file_name = merge_and_compress_files files.collect{|file|"#{base_path}/#{file}"}
+        cached_file_name = merge_and_compress_files(files.collect{ |file|File.join(base_path,file) })
         cache[full_file_name] = cached_file_name
         return cached_file_name
       end
@@ -76,7 +73,7 @@ class JSInclude
     content = files.collect{ |file| File.read file }.join "\n"
     # write to tmp file
     file_name = JSInclude.extract_js_file_name(files.last)+"_compressed.js"
-    full_file_name = File.join(RAILS_ROOT, '/tmp/', file_name)
+    full_file_name = File.join(RAILS_ROOT, 'tmp', file_name)
     File.open(full_file_name, 'w'){ |file| file << content }
     return file_name, full_file_name
   end
@@ -88,8 +85,8 @@ class JSInclude
   def self.compress file_name, full_file_name
     puts "============== JSInclude ==============="
     puts "compressing #{file_name}"
-    yui_compressor = "#{RAILS_ROOT}/vendor/plugins/js_include/lib/yui-compressor.jar"
-    `java -jar #{yui_compressor} --charset UTF-8 -o #{base_path}/#{cache_dir_name}/#{file_name} #{full_file_name}`
+    yui_compressor = File.join(RAILS_ROOT,"vendor/plugins/js_include/lib/yui-compressor.jar")
+    `java -jar #{yui_compressor} --charset UTF-8 -o #{File.join(base_path,cache_dir_name,file_name)} #{full_file_name}`
     # $?.exitstatus  0 for success , others for failure
     "/#{cache_dir_name}/#{file_name}"
   end
@@ -107,7 +104,7 @@ class JSInclude
   #   scan_include_tag "a.js" => ["c.js","b.js"] 
   #   read js_include_spec.rb for more example
   def self.scan_include_tag file_name
-    full_file_name = "#{base_path}/#{file_name}"
+    full_file_name = File.join(base_path,file_name)
     Error::JsNotFound.check full_file_name
     result = [] 
     path = file_name.match(/^.*\//)
