@@ -43,12 +43,15 @@ module JSInclude
   end
   
   def self.get_required_file_names file_name
+    full_file_name = "#{BASE_PATH}/#{file_name}"
     if JSInclude::ENABLE_PRODUCTION
-      cached_file_name = JSInclude::CACHE[file_name]
+      cached_file_name = JSInclude::CACHE[full_file_name]
       if cached_file_name and File.exists? cached_file_name
         return cached_file_name
       else
-        merge_and_compress_file file_name
+        cached_file_name = merge_and_compress_files(recursion_find_required_files file_name)
+        JSInclude::CACHE[full_file_name] = cached_file_name
+        return cached_file_name
       end
     else
       return recursion_find_required_files(file_name).reverse 

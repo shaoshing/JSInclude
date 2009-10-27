@@ -62,21 +62,33 @@ describe "JSInclude" do
       end
     end
     
-    describe "when enable production" do
+    describe "when enable production and required file was" do
       before(:each) do
         JSInclude::ENABLE_PRODUCTION = true
         JSInclude::CACHE = {}
         JSInclude::CACHE_BASE_PATH   = "test_files/cache"
+        @file_name = "a.js"
+        @full_file_name = "#{JSInclude::BASE_PATH}/a.js"
       end
-      describe "and included file was cached " do
+      describe "cached " do
         it "should return cached file name when the file was exist" do
-          JSInclude::CACHE.should_receive(:[]).with("a.js").and_return("#{JSInclude::CACHE_BASE_PATH}/compressed.js")
-          JSInclude::get_required_file_names("a.js").should ==  "#{JSInclude::CACHE_BASE_PATH}/compressed.js"
+          JSInclude::CACHE.should_receive(:[]).with(@full_file_name).and_return("#{JSInclude::CACHE_BASE_PATH}/compressed.js")
+          JSInclude::get_required_file_names(@file_name).should ==  "#{JSInclude::CACHE_BASE_PATH}/compressed.js"
         end
         it "should involve [merge_and_compress_file] if file not exist" do
-          JSInclude.should_receive(:merge_and_compress_file).with("a.js")
-          JSInclude::CACHE.should_receive(:[]).with("a.js").and_return nil
-          JSInclude::get_required_file_names("a.js")
+          JSInclude.stub! :recursion_find_required_files
+          JSInclude::CACHE.should_receive(:[]).with(@full_file_name).and_return nil
+          JSInclude.should_receive(:merge_and_compress_files)
+          JSInclude::get_required_file_names(@file_name)
+        end
+      end
+      describe "not cached" do
+        it "should merge_and_compress_files, and then store cached file name and return that name" do
+          JSInclude.should_receive(:recursion_find_required_files).with(@file_name).and_return(["a.js"])
+          JSInclude.should_receive(:merge_and_compress_files).with(["a.js"]).and_return("cached_name.js")
+          
+          JSInclude::get_required_file_names(@file_name).should == "cached_name.js" 
+          JSInclude::CACHE[@full_file_name].should == "cached_name.js" 
         end
       end
     end
