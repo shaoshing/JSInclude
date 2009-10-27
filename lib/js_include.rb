@@ -54,7 +54,7 @@ class JSInclude
     full_file_name = "#{base_path}/#{file_name}"
     if enable_production
       cached_file_name = cache[full_file_name]
-      if cached_file_name and File.exists? cached_file_name
+      if cached_file_name and File.exists? "#{base_path}#{cached_file_name}"
         return cached_file_name
       else
         files = recursion_find_required_files file_name
@@ -86,10 +86,12 @@ class JSInclude
   end
   
   def self.compress file_name, full_file_name
+    puts "============== JSInclude ==============="
+    puts "compressing #{file_name}"
     yui_compressor = "#{RAILS_ROOT}/vendor/plugins/js_include/lib/yui-compressor.jar"
     `java -jar #{yui_compressor} --charset UTF-8 -o #{base_path}/#{cache_dir_name}/#{file_name} #{full_file_name}`
     # $?.exitstatus  0 for success , others for failure
-    "#{cache_dir_name}/#{file_name}"
+    "/#{cache_dir_name}/#{file_name}"
   end
   
   # Scan for INCLUDE_TAG and extract file_name after the TAG.

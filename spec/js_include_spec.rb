@@ -74,7 +74,7 @@ describe "JSInclude" do
       end
       describe "cached " do
         it "should return cached file name when the file was exist" do
-          cached_name = "#{JSInclude.base_path}/#{JSInclude.cache_dir_name}/compressed.js"
+          cached_name = "/#{JSInclude.cache_dir_name}/compressed.js"
           JSInclude.cache.should_receive(:[]).with(@full_file_name).and_return(cached_name)
           JSInclude::get_required_file_names(@file_name).should ==  cached_name
         end
@@ -153,8 +153,8 @@ describe "JSInclude" do
       it "should compress the file with YUI-Compressor"do
         RAILS_ROOT = "./../../.."
         file = JSInclude.compress "to_be_compress.js", "#{JSInclude.base_path}/to_be_compress.js"
-        file.should == "#{JSInclude.cache_dir_name}/to_be_compress.js"
-        File.read("#{JSInclude.base_path}/#{file}").should ==  "true?1:2;" 
+        file.should == "/#{JSInclude.cache_dir_name}/to_be_compress.js"
+        File.read("#{JSInclude.base_path}#{file}").should ==  "true?1:2;" 
       end
     end
   end
