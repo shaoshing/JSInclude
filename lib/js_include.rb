@@ -2,18 +2,13 @@
 class JSInclude
   
   class << self
-    attr_accessor :base_path
-    attr_accessor :inclue_tag       
-    attr_accessor :enable_production
-    attr_accessor :cache            
-    attr_accessor :cache_dir_name
+    attr_accessor :base_path, :inclue_tag, :enable_production, :cache, :cache_dir_name
   end
   self.base_path         = "public"
   self.inclue_tag        = "@include"           # You can change the TAG into anything as you like
   self.enable_production = false 
   self.cache             = {}                   #  required_file => merged_and_compressed_file
   self.cache_dir_name    = "js_include_cached"
-  
   
   module Helper
     # Just like javascript_include_tag, it will generate the <script> tag
@@ -37,12 +32,12 @@ class JSInclude
   module Error
     class DeadEnd < Exception 
       def self.check dependency_stack, file
-        raise new("Dead End at:\n#{dependency_stack.push(file).inspect}") if dependency_stack.include? file
+        raise (DeadEnd, "Dead End at:\n#{dependency_stack.push(file).inspect}") if dependency_stack.include? file
       end
     end
     class JsNotFound < Exception 
       def self.check file
-        raise new("Javascript file not found in #{file}") unless File.exists? file
+        raise (JsNotFound, "Javascript file not found in #{file}") unless File.exists? file
       end
     end 
   end
@@ -86,8 +81,8 @@ class JSInclude
     puts "============== JSInclude ==============="
     puts "compressing #{file_name}"
     yui_compressor = File.join(RAILS_ROOT,"vendor/plugins/js_include/lib/yui-compressor.jar")
-    `java -jar #{yui_compressor} --charset UTF-8 -o #{File.join(base_path,cache_dir_name,file_name)} #{full_file_name}`
-    # $?.exitstatus  0 for success , others for failure
+    result = `java -jar #{yui_compressor} --charset UTF-8 -o #{File.join(base_path,cache_dir_name,file_name)} #{full_file_name}`
+    raise "YUI-Compressor error:\n #{result}" if $?.exitstatus != 0
     "/#{cache_dir_name}/#{file_name}"
   end
   
