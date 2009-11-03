@@ -32,12 +32,12 @@ class JSInclude
   module Error
     class DeadEnd < Exception 
       def self.check dependency_stack, file
-        raise (DeadEnd, "Dead End at:\n#{dependency_stack.push(file).inspect}") if dependency_stack.include? file
+        raise(DeadEnd, "Dead End at:\n#{dependency_stack.push(file).inspect}") if dependency_stack.include? file
       end
     end
     class JsNotFound < Exception 
       def self.check file
-        raise (JsNotFound, "Javascript file not found in #{file}") unless File.exists? file
+        raise(JsNotFound, "Javascript file not found in #{file}") unless File.exists? file
       end
     end 
   end
