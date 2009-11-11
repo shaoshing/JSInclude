@@ -78,6 +78,9 @@ class JSInclude
   end
   
   def self.compress file_name, full_file_name
+    cache_dir = File.join(base_path,cache_dir_name)
+    Dir.mkdir cache_dir unless File.exist? cache_dir
+    
     puts "============== JSInclude ==============="
     puts "compressing #{file_name}"
     yui_compressor = File.join(RAILS_ROOT,"vendor/plugins/js_include/lib/yui-compressor.jar")
