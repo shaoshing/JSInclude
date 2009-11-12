@@ -86,6 +86,7 @@ class JSInclude
     yui_compressor = File.join(RAILS_ROOT,"vendor/plugins/js_include/lib/yui-compressor.jar")
     result = `java -jar #{yui_compressor} --charset UTF-8 -o #{File.join(base_path,cache_dir_name,file_name)} #{full_file_name}`
     raise "YUI-Compressor error:\n #{result}" if $?.exitstatus != 0
+    
     "/#{cache_dir_name}/#{file_name}"
   end
   
