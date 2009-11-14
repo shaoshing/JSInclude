@@ -32,7 +32,7 @@ describe "JSInclude" do
     describe "success:" do
       it "normal dependency" do
         result = JSInclude::get_required_file_names "/dependency/normal/a.js"
-        result.size.should == 4
+        result.should have(4).file_names
         result[0].should == "/dependency/normal/d.js"
         result[1].should == "/dependency/normal/c.js"
         result[2].should == "/dependency/normal/b.js"
@@ -41,7 +41,7 @@ describe "JSInclude" do
       
       it "complex" do
         result = JSInclude::get_required_file_names "/dependency/complex/a.js"
-        result.size.should == 6
+        result.should have(6).file_names
         result[0].should == "/dependency/complex/../normal/d.js"
         result[1].should == "/dependency/complex/e.js" 
         result[5].should == "/dependency/complex/a.js"
@@ -49,7 +49,7 @@ describe "JSInclude" do
       
       it "test file order" do
         result = JSInclude::get_required_file_names "/dependency/order/order.js"
-        result.size.should == 3
+        result.should have(3).file_names
         result[0].should == "/dependency/order/1.js"
         result[1].should == "/dependency/order/2.js" 
         result[2].should == "/dependency/order/order.js"
@@ -101,18 +101,18 @@ describe "JSInclude" do
   describe "[scan_include_tag]" do
     it "only scan lines begin with include tag [JSInclude::INCLUDE_TAG]" do
       files = JSInclude.scan_include_tag "/tag/normal.js"  
-      files.size.should == 1
+      files.should have(1).file_names
       files[0].should == "/tag/test.js"  
     end
     
     it "will stop if the beginning line is not start with tag" do
       files = JSInclude.scan_include_tag "/tag/begin.js"  
-      files.size.should == 0
+      files.should have(0).file_names
     end
     
     it "will stop if the up comming line is not start with tag" do
       files = JSInclude.scan_include_tag "/tag/end.js"  
-      files.size.should == 1
+      files.should have(1).file_names
       files[0].should == "/tag/test.js"
     end
     
